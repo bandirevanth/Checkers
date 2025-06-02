@@ -1,34 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="module" src="js/main.js"></script>
-    <link rel="stylesheet" href="style.css">
-    <title>Checkers AI</title>
+  <meta charset="UTF-8" />
+  <title>Checkers AI</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <header>
-        <h1>Checkers</h1>
-        <p>vs Computer</p>
-    </header>
-    <main>e
-        <!-- The Playing Board -->
-        <div id="board" class="board"></div>
-        
-        <!-- The Score Board -->
-        <div class="scores">
-            <h2>Scores</h2>
-            <p>You: <span id="humanScore">0</span> | Computer: <span id="computerScore">0</span></p>
-        </div>
-
-        <!-- Place for playing errors -->
-        <div class="errors">
-            <p id="error"></p>
-        </div>
-    </main>
+  <div id="board"></div>
+  <div id="error"></div>
+  <div>
+    Human Score: <span id="humanScore">0</span>
+    AI Score: <span id="computerScore">0</span>
+  </div>
+  <script type="module" src="./js/main.js"></script>
 </body>
-
 </html>
