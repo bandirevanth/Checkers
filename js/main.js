@@ -1,5 +1,4 @@
 import CheckerBoard from "./board.js";
-import MiniMax from "./minimax.js";
 
 // Create a new CheckerBoard instance
 const board = new CheckerBoard();
