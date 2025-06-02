@@ -145,11 +145,7 @@ function movePiece(from, to) {
 }
 
 // Draw the initial game board
+drawBoard();
 let turn = 'white';
 const humanScoreElement = document.getElementById('humanScore');
 const computerScoreElement = document.getElementById('computerScore');
-
-const ai = new MiniMax(4);
-const bestMove = ai.getBestMove(board);
-if (bestMove) movePiece(bestMove.from, bestMove.to);
-window.onload = drawBoard;
