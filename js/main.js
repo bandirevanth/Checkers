@@ -1,4 +1,5 @@
 import CheckerBoard from "./board.js";
+import MiniMax from "./minimax.js";
 
 // Create a new CheckerBoard instance
 const board = new CheckerBoard();
@@ -149,3 +150,7 @@ drawBoard();
 let turn = 'white';
 const humanScoreElement = document.getElementById('humanScore');
 const computerScoreElement = document.getElementById('computerScore');
+
+const ai = new MiniMax(4);
+const bestMove = ai.getBestMove(board);
+if (bestMove) movePiece(bestMove.from, bestMove.to);
