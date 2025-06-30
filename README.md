@@ -17,6 +17,6 @@ This project is a Checkers game that allows users to play against the computer. 
 You can tweak the AI difficulty in main.js:
 
 ``` js
-const ai = new MiniMax(2); // depth 2 = fast, 3+ = stronger
+const ai = new MiniMax(2); // depth: 2 = fast, 3+ = strong
 
 
