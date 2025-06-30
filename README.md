@@ -1,6 +1,6 @@
 # CheckersAI
 
-This project is a Checkers game that allows users to play against the computer. The game features a user-friendly interface and well-written logic. | LIVE DEMO - https://6zykls.csb.app/
+This project is a Checkers game that allows users to play against the computer. The game features a user-friendly interface and well-written logic. | LIVE DEMO - *coming soon*
 
 ## AI Logic: Minimax with Alpha-Beta Pruning
 - The AI recursively simulates possible moves up to a configurable depth.
