@@ -100,8 +100,7 @@ function selectPiece(piece, row, col) {
 }
 
 function movePiece(from, to) {
-    const distance = Math.abs(from.x - to.x);
-
+    let distance = Math.abs(from.x - to.x);
     if (distance > 1) {
         board.takePiece((from.y + to.y) / 2, (from.x + to.x) / 2);
     }
@@ -115,19 +114,22 @@ function movePiece(from, to) {
     computerScoreElement.innerHTML = 12 - board.whiteScore;
 
     if (turn === 'black') {
-        setTimeout(aiMove, 300);
+        setTimeout(aiMove, 200);
     }
 }
 
 function aiMove() {
-    const bestMove = ai.getBestMove(board, true);
-    if (bestMove) {
-        movePiece(bestMove.from, bestMove.to);
+    const move = ai.getBestMove(board, true);
+    if (move) {
+        movePiece(move.from, move.to); // triggers next turn (and human's move)
+    } else {
+        alert("Computer has no moves. You win!");
     }
 }
 
+
 // Init
 drawBoard();
-let turn = 'white';
+let turn = 'white'; // Human always starts
 const humanScoreElement = document.getElementById('humanScore');
 const computerScoreElement = document.getElementById('computerScore');
