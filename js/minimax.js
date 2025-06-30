@@ -32,10 +32,10 @@ class MiniMax {
 
         for (let move of moves) {
             const original = this.applyMove(board, move);
-            const eval = this.minimize(board, depth + 1, alpha, beta);
+            const score = this.minimize(board, depth + 1, alpha, beta);
             this.undoMove(board, move, original);
-            maxEval = Math.max(maxEval, eval);
-            alpha = Math.max(alpha, eval);
+            maxEval = Math.max(maxEval, score);
+            alpha = Math.max(alpha, score);
             if (beta <= alpha) break; // Beta cut-off
         }
 
@@ -50,10 +50,10 @@ class MiniMax {
 
         for (let move of moves) {
             const original = this.applyMove(board, move);
-            const eval = this.maximize(board, depth + 1, alpha, beta);
+            const score = this.maximize(board, depth + 1, alpha, beta);
             this.undoMove(board, move, original);
-            minEval = Math.min(minEval, eval);
-            beta = Math.min(beta, eval);
+            minEval = Math.min(minEval, score);
+            beta = Math.min(beta, score);
             if (beta <= alpha) break; // Alpha cut-off
         }
 
