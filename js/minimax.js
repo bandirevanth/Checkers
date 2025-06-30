@@ -25,7 +25,7 @@ class MiniMax {
     }
 
     maximize(board, depth, alpha, beta) {
-        if (depth === this.maxDepth) return this.evaluateBoard(board);
+        if (depth === this.maxDepth) return this.evaluateBoard(board); // Base case
 
         let maxEval = -Infinity;
         const moves = this.getAllValidMoves(board, 'black');
@@ -43,7 +43,7 @@ class MiniMax {
     }
 
     minimize(board, depth, alpha, beta) {
-        if (depth === this.maxDepth) return this.evaluateBoard(board);
+        if (depth === this.maxDepth) return this.evaluateBoard(board); // Base case
 
         let minEval = Infinity;
         const moves = this.getAllValidMoves(board, 'white');
@@ -65,7 +65,7 @@ class MiniMax {
         for (let row of board.board) {
             for (let piece of row) {
                 if (piece) {
-                    const value = piece.isKing ? 3 : 1;
+                    const value = piece.isKing ? 3 : 1; // King is more valuable
                     score += (piece.color === 'black') ? value : -value;
                 }
             }
@@ -81,11 +81,13 @@ class MiniMax {
                 if (piece && piece.color === color) {
                     const directions = this.getDirections(piece);
                     for (let [dy, dx] of directions) {
+                        // Calculate the new potential destination square by applying a direction
                         const ny = y + dy;
                         const nx = x + dx;
                         if (this.inBounds(nx, ny) && !board.board[ny][nx]) {
                             moves.push({ from: { x, y }, to: { x: nx, y: ny } });
                         } else if (
+                            // If the destination is within bounds and empty, it’s a normal move — store it.
                             this.inBounds(ny + dy, nx + dx) &&
                             board.board[ny] &&
                             board.board[ny][nx] &&
@@ -93,6 +95,9 @@ class MiniMax {
                             !board.board[ny + dy][nx + dx]
                         ) {
                             moves.push({ from: { x, y }, to: { x: nx + dx, y: ny + dy } });
+                            /* If there's an enemy piece at (nx, ny)
+                            And if the square beyond it (ny + dy, nx + dx) is empty
+                            Then the player can jump over — so we record that as a capture move. */
                         }
                     }
                 }
@@ -103,8 +108,8 @@ class MiniMax {
 
     getDirections(piece) {
         const dirs = [];
-        if (piece.color === 'black' || piece.isKing) dirs.push([1, -1], [1, 1]);
-        if (piece.color === 'white' || piece.isKing) dirs.push([-1, -1], [-1, 1]);
+        if (piece.color === 'black' || piece.isKing) dirs.push([1, -1], [1, 1]); // Downward diagonals
+        if (piece.color === 'white' || piece.isKing) dirs.push([-1, -1], [-1, 1]); // Upward diagonals
         return dirs;
     }
 
@@ -118,10 +123,11 @@ class MiniMax {
 
         let takenPiece = null;
         if (Math.abs(dx) === 2 && Math.abs(dy) === 2) {
-            const midX = (move.from.x + move.to.x) / 2;
+            // If it's a capture move
+            const midX = (move.from.x + move.to.x) / 2; 
             const midY = (move.from.y + move.to.y) / 2;
             takenPiece = board.board[midY][midX];
-            board.board[midY][midX] = null;
+            board.board[midY][midX] = null; // Remove the captured piece
         }
 
         return { captured, takenPiece, midX: (move.from.x + move.to.x) / 2, midY: (move.from.y + move.to.y) / 2 };
@@ -142,6 +148,7 @@ class MiniMax {
         }
     }
 
+    // Helper: check if coordinates are within board bounds
     inBounds(x, y) {
         return x >= 0 && x < 8 && y >= 0 && y < 8;
     }
