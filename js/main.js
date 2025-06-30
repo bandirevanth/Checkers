@@ -4,7 +4,9 @@ import MiniMax from "./minimax.js";
 // Create a new CheckerBoard instance
 const board = new CheckerBoard();
 const ai = new MiniMax(3); // Depth of Minimax
-const turnIndicator = document.getElementById('turnIndicator');
+
+let turn = 'white'; // Global turn state
+let humanScoreElement, computerScoreElement, turnIndicator;
 
 // Set up the game board UI
 function drawBoard() {
@@ -109,36 +111,34 @@ function movePiece(from, to) {
     board.movePiece(from, to);
     drawBoard();
 
-    // Switch turn
     turn = (turn === 'white') ? 'black' : 'white';
-
-    // Update the turn indicator UI
     turnIndicator.textContent = `Turn: ${turn.charAt(0).toUpperCase() + turn.slice(1)}`;
     turnIndicator.style.color = (turn === 'white') ? '#345' : '#c40003';
 
-    // Update scores
     humanScoreElement.innerHTML = 12 - board.blackScore;
     computerScoreElement.innerHTML = 12 - board.whiteScore;
 
-    // Trigger AI if it's black's turn
     if (turn === 'black') {
         setTimeout(aiMove, 200);
     }
 }
 
-
 function aiMove() {
     const move = ai.getBestMove(board, true);
     if (move) {
-        movePiece(move.from, move.to); // triggers next turn (and human's move)
+        movePiece(move.from, move.to);
     } else {
         alert("Computer has no moves. You win!");
     }
 }
 
+// DOM Ready Initialization
+window.addEventListener("DOMContentLoaded", () => {
+    humanScoreElement = document.getElementById('humanScore');
+    computerScoreElement = document.getElementById('computerScore');
+    turnIndicator = document.getElementById('turnIndicator');
 
-// Init
-drawBoard();
-let turn = 'white'; // Human always starts
-const humanScoreElement = document.getElementById('humanScore');
-const computerScoreElement = document.getElementById('computerScore');
+    drawBoard();
+    turnIndicator.textContent = `Turn: White`;
+    turnIndicator.style.color = '#345';
+});
