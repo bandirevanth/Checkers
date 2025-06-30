@@ -2,6 +2,8 @@
 
 This project is a Checkers game that allows users to play against the computer. The game features a user-friendly interface and well-written logic. | LIVE DEMO - *coming soon*
 
+<img align=right height=400 width=300 src="demo.png">
+
 ## AI Logic: Minimax with Alpha-Beta Pruning
 - The AI recursively simulates possible moves up to a configurable depth.
 - **Minimax Algorithm**: simulates human (minimizer) and AI (maximizer) turns.
