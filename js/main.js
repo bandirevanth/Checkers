@@ -1,16 +1,15 @@
 import CheckerBoard from "./board.js";
+import MiniMax from "./minimax.js";
 
 // Create a new CheckerBoard instance
 const board = new CheckerBoard();
+const ai = new MiniMax(3); // Depth of Minimax
 
 // Set up the game board UI
 function drawBoard() {
     const boardElement = document.getElementById('board');
-
-    // Clear the board
     boardElement.innerHTML = '';
 
-    // Draw each piece on the board
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 8; col++) {
             const square = document.createElement('div');
@@ -22,10 +21,11 @@ function drawBoard() {
                 pieceElement.className = `piece ${piece.color}`;
                 pieceElement.textContent = piece.isKing ? 'K' : '';
 
-                // Add a click event listener to each piece
-                pieceElement.addEventListener('click', () => {
-                    selectPiece(piece, row, col);
-                });
+                if (piece.color === 'white') {
+                    pieceElement.addEventListener('click', () => {
+                        selectPiece(piece, row, col);
+                    });
+                }
 
                 square.appendChild(pieceElement);
             }
@@ -35,66 +35,37 @@ function drawBoard() {
     }
 }
 
-// Checker if a row and column is in bound on the game board
 function inBound(row, col) {
-    let rowInBound = (0 <= row && row < 8);
-    let colInBound = (0 <= col && col < 8);
-
-    return rowInBound && colInBound;
+    return (0 <= row && row < 8) && (0 <= col && col < 8);
 }
 
-// Generate the next places to move to for selected pieces
 function generateNextPlaces(piece, row, col) {
-    let nextCells = [];
-    if (piece) {
-        if (piece.color == 'white' || piece.isKing) {
-            if (inBound(row - 1, col - 1)) {
-                let otherPiece = board.board[row - 1][col - 1];
+    const nextCells = [];
+    const directions = [];
 
-                if (otherPiece) {
-                    if (piece.color != otherPiece.color) {
-                        if (inBound(row - 2, col - 2) && !board.board[row - 2][col - 2])
-                            nextCells.push([row - 2, col - 2]);
-                    }
-                } else {
-                    nextCells.push([row - 1, col - 1]);
+    if (piece.color === 'white' || piece.isKing) {
+        directions.push([-1, -1], [-1, 1]);
+    }
+    if (piece.color === 'black' || piece.isKing) {
+        directions.push([1, -1], [1, 1]);
+    }
+
+    for (let [dy, dx] of directions) {
+        const ny = row + dy;
+        const nx = col + dx;
+
+        if (inBound(ny, nx)) {
+            const target = board.board[ny][nx];
+
+            if (!target) {
+                nextCells.push([ny, nx]);
+            } else if (target.color !== piece.color) {
+                const jumpY = ny + dy;
+                const jumpX = nx + dx;
+
+                if (inBound(jumpY, jumpX) && !board.board[jumpY][jumpX]) {
+                    nextCells.push([jumpY, jumpX]);
                 }
-            }
-            if (inBound(row - 1, col + 1)) {
-                let otherPiece = board.board[row - 1][col + 1];
-
-                if (otherPiece) {
-                    if (piece.color != otherPiece.color) {
-                        if (inBound(row - 2, col + 2) && !board.board[row - 2][col + 2])
-                            nextCells.push([row - 2, col + 2]);
-                    }
-                } else {
-                    nextCells.push([row - 1, col + 1]);
-                }
-            }
-        }
-        if (piece.color == 'black' || piece.isKing) {
-            if (inBound(row + 1, col - 1)) {
-                let otherPiece = board.board[row + 1][col - 1];
-
-                if (otherPiece) {
-                    if (piece.color != otherPiece.color) {
-                        if (inBound(row + 2, col - 2) && !board.board[row + 2][col - 2])
-                            nextCells.push([row + 2, col - 2]);
-                    }
-                } else
-                    nextCells.push([row + 1, col - 1]);
-            }
-            if (inBound(row + 1, col + 1)) {
-                let otherPiece = board.board[row + 1][col + 1];
-
-                if (otherPiece) {
-                    if (piece.color != otherPiece.color) {
-                        if (inBound(row + 2, col + 2) && !board.board[row + 2][col + 2])
-                            nextCells.push([row + 2, col + 2]);
-                    }
-                } else
-                    nextCells.push([row + 1, col + 1]);
             }
         }
     }
@@ -102,24 +73,24 @@ function generateNextPlaces(piece, row, col) {
     return nextCells;
 }
 
-// Select a piece to move
 function selectPiece(piece, row, col) {
     const errorElement = document.getElementById('error');
-    if (piece && piece.color == turn) {
-        let nextCells = generateNextPlaces(piece, row, col);
+    if (piece && piece.color === turn) {
+        const nextCells = generateNextPlaces(piece, row, col);
         const squares = document.getElementsByClassName('square');
-        
+
         for (let i = 0; i < 64; i++) {
             squares[i].classList.remove('green');
         }
 
         for (let i = 0; i < nextCells.length; i++) {
-            let location = (nextCells[i][0] * 8) + nextCells[i][1];
-            
-            squares[location].classList.toggle('green');
+            const [r, c] = nextCells[i];
+            const location = (r * 8) + c;
+
+            squares[location].classList.add('green');
             squares[location].addEventListener('click', () => {
-                movePiece({x: col, y: row}, {x: nextCells[i][1], y: nextCells[i][0]});
-            });
+                movePiece({ x: col, y: row }, { x: c, y: r });
+            }, { once: true });
         }
 
         errorElement.innerHTML = '';
@@ -128,23 +99,34 @@ function selectPiece(piece, row, col) {
     }
 }
 
-// Move a piece
 function movePiece(from, to) {
-    let distance = Math.abs(from.x - to.x);
+    const distance = Math.abs(from.x - to.x);
+
     if (distance > 1) {
-        board.takePiece((from.y + to.y) / 2, (from.x + to.x) / 2)
+        board.takePiece((from.y + to.y) / 2, (from.x + to.x) / 2);
     }
+
     board.movePiece(from, to);
     drawBoard();
 
-    turn = (turn == 'white') ? 'black' : 'white';
+    turn = (turn === 'white') ? 'black' : 'white';
 
-    console.log(humanScoreElement)
     humanScoreElement.innerHTML = 12 - board.blackScore;
     computerScoreElement.innerHTML = 12 - board.whiteScore;
+
+    if (turn === 'black') {
+        setTimeout(aiMove, 300);
+    }
 }
 
-// Draw the initial game board
+function aiMove() {
+    const bestMove = ai.getBestMove(board, true);
+    if (bestMove) {
+        movePiece(bestMove.from, bestMove.to);
+    }
+}
+
+// Init
 drawBoard();
 let turn = 'white';
 const humanScoreElement = document.getElementById('humanScore');
